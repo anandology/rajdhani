@@ -1,11 +1,17 @@
 """
 Module to interact with the database.
 """
-
+from sqlalchemy import create_engine, MetaData, Table, select, func, or_
+from . import config
 from . import db_ops
 
 db_ops.ensure_db()
 
+engine = create_engine(config.db_uri, echo=True)
+meta = MetaData(bind=engine)
+
+train_table = Table("train", meta, autoload=True)
+station_table = Table("station", meta, autoload=True)
 
 def search_stations(q):
     """Returns the top ten stations matching the given query string.
@@ -15,15 +21,17 @@ def search_stations(q):
     The q is the few characters of the station name or
     code entered by the user.
     """
-    # TODO: make a db query to get the matching stations
-    # and replace the following dummy implementation
+    s = station_table
 
-    return [
-        {"code": "SBC", "name": "Bangalore"},
-        {"code": "MAS", "name": "Chennai"},
-        {"code": "NDLS", "name": "New Delhi"},
-        {"code": "MMCT", "name": "Mumbai"}
-    ]
+    query = (
+        select(s.c.code, s.c.name)
+        .where(
+            or_(
+                func.upper(s.c.code)==q.upper(),
+                func.upper(s.c.name).contains(q.upper())))
+        .limit(10)
+    )
+    return [dict(row) for row in query.execute()]
 
 def search_trains(from_station, to_station, date, ticket_class):
     """Returns all the trains that source to destination stations on
