@@ -1,7 +1,9 @@
 """
 Module to interact with the database.
 """
-from sqlalchemy import create_engine, MetaData, Table, select, func, or_
+from sqlalchemy import (
+    create_engine, MetaData, Table,
+    select, func, or_, literal)
 from . import config
 from . import db_ops
 
@@ -40,6 +42,22 @@ def search_trains(from_station, to_station, date, ticket_class):
 
     This is used to get show the trains on the search results page.
     """
+    t = train_table
+    q = (select(
+            t.c.number,
+            t.c.name,
+            t.c.from_station_code,
+            t.c.from_station_name,
+            t.c.to_station_code,
+            t.c.to_station_name,
+            t.c.departure,
+            t.c.arrival,
+            t.c.duration_h,
+            t.c.duration_m)
+        .where(t.c.from_station_code==from_station)
+        .where(t.c.to_station_code==to_station))
+    return q.execute().all()
+
     # TODO: make a db query to get the matching trains
     # and replace the following dummy implementation
 

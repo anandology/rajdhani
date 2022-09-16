@@ -33,6 +33,7 @@ def api_search():
     date = request.args.get("date")
 
     trains = db.search_trains(from_station, to_station, ticket_class, date)
+    trains = [dict(t) for t in trains]
     return jsonify(trains)
 
 @app.route("/search")
