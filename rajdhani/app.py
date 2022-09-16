@@ -46,6 +46,11 @@ def api_stations():
     stations = db.search_stations(q)
     return jsonify(stations)
 
+@app.route("/api/trains/<train_number>")
+def api_train(train_number):
+    schedule = [dict(row) for row in db.get_schedule(train_number)]
+    return jsonify(schedule)
+
 @app.route("/api/search")
 def api_search():
     from_station_code = request.args.get("from")
