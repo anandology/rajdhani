@@ -24,7 +24,7 @@ def search_stations(q):
     The q is the few characters of the station name or
     code entered by the user.
     """
-    return placeholders.AUTOCOMPLETE_STATIONS
+    # return placeholders.AUTOCOMPLETE_STATIONS
     s = station_table
 
     query = (
