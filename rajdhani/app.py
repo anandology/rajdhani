@@ -27,12 +27,14 @@ def api_stations():
 
 @app.route("/api/search")
 def api_search():
-    from_station = request.args.get("from")
-    to_station = request.args.get("to")
+    from_station_code = request.args.get("from")
+    to_station_code = request.args.get("to")
     ticket_class = request.args.get("class")
-    date = request.args.get("date")
 
-    trains = db.search_trains(from_station, to_station, ticket_class, date)
+    trains = db.search_trains(
+        from_station_code=from_station_code,
+        to_station_code=to_station_code,
+        ticket_class=ticket_class)
     trains = [dict(t) for t in trains]
     return jsonify(trains)
 

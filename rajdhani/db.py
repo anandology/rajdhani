@@ -37,7 +37,7 @@ def search_stations(q):
     )
     return [dict(row) for row in query.execute()]
 
-def search_trains(from_station, to_station, date, ticket_class=None):
+def search_trains(from_station_code, to_station_code, ticket_class=None):
     """Returns all the trains that source to destination stations on
     the given date. When ticket_class is provided, this should return
     only the trains that have that ticket class.
@@ -56,8 +56,8 @@ def search_trains(from_station, to_station, date, ticket_class=None):
             t.c.arrival,
             t.c.duration_h,
             t.c.duration_m)
-        .where(t.c.from_station_code==from_station)
-        .where(t.c.to_station_code==to_station))
+        .where(t.c.from_station_code==from_station_code)
+        .where(t.c.to_station_code==to_station_code))
     if ticket_class:
         columns = {
             "SL": t.c.sleeper,
