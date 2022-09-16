@@ -23,8 +23,8 @@ async function getAutocomplete(input) {
   });
 }
 
-async function searchTrains(from, to, date, ticketClass) {
-  const qs = getQuerystring({ from,  to, date, ticket_class: ticketClass })
+async function searchTrains(from, to, ticketClass) {
+  const qs = getQuerystring({ from,  to, class: ticketClass })
   const url = `${searchURL}?${qs}`
 
   const response = await fetch(url)
@@ -68,25 +68,6 @@ function getAutocompleteItem(value, text) {
         </li>`;
 }
 
-function getTrainCard(train) {
-  return `
-  <div class="card mb-2">
-    <div class="card-header">
-      <h5>${train.name} (${train.number})</h5>
-    </div>
-    <div class="card-body d-flex justify-content-between">
-      <div>
-        <h3>${train.departure}</h3>
-        <h5>${train.from_station_name}</h5>
-      </div>
-      <div>
-        <h3>${train.arrival}</h3>
-        <h5>${train.to_station_name}</h5>
-      </div>
-    </div>
-  </div>
-  `
-}
 
 $(document).ready(function () {
   const $fromStationDiv = $("#from-station-div");
@@ -133,23 +114,4 @@ $(document).ready(function () {
     $(valueTarget).val(value);
     $(textTarget).val(text);
   });
-
-  $("#trains-search").submit(async function(e) {
-    e.preventDefault()
-
-    let argsList = $(this).serializeArray()
-    console.log("argslist", argsList)
-
-    let args = argsList.reduce((a, {name, value}) => ({ ...a, [name]: value }), {})
-    console.log("args", args)
-
-    const trains = await searchTrains(args.from, args.to, args.date || "", args.ticket_class || "")
-    console.log("trains", trains)
-
-    $("#trains").html(
-      trains.map(getTrainCard).join("\n")
-    )
-
-    $("#trains-container").show()
-  })
 });

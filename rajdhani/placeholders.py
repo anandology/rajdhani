@@ -4,6 +4,7 @@ as a placeholder until the real implementation is added.
 
 AUTOCOMPLETE_STATIONS = [
     {"code": "ADI", "name": "AHMEDABAD JN"},
+    {"code": "BCT", "name": "Mumbai Central"},
     {"code": "SBC", "name": "BANGALORE CITY JN"},
     {"code": "MAS", "name": "CHENNAI CENTRAL"},
     {"code": "HWH", "name": "HOWRAH JN"},

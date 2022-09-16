@@ -7,26 +7,62 @@
     <em>Explore India on the wonderful train network!</em>
     </div>
 
-    <form id="trains-search" autocomplete=off>
+    <form method="GET" id="trains-search" autocomplete="off">
       <div class="mb-3" id="from-station-div">
         <label for="from-station-text" class="form-label">From</label>
-        <input type="text" name="from-name" class="form-control" id="from-station-text">
-        <input type="hidden" name ="from" class="form-control" id="from-station">
+        <input type="text" name="from_station_name" class="form-control" id="from-station-text" value="{{args.from_station_name}}">
+        <input type="hidden" name ="from_station_code" class="form-control" id="from-station" value="{{args.from_station_code}}">
         <ul id="from-station-autocomplete-items" class="form-control autocomplete-list" style="display: none;" data-text-target="#from-station-text" data-value-target="#from-station">
         </ul>
       </div>
       <div class="mb-3" id="to-station-div">
         <label for="from-station" class="form-label">To</label>
-        <input type="text" name="to-name" class="form-control" id="to-station-text">
-        <input type="hidden" name="to" class="form-control" id="to-station">
+        <input type="text" name="to_station_name" class="form-control" id="to-station-text" value="{{args.to_station_name}}">
+        <input type="hidden" name="to_station_code" class="form-control" id="to-station" value="{{args.to_station_code}}">
         <ul id="to-station-autocomplete-items" class="form-control autocomplete-list" style="display: none;" data-text-target="#to-station-text" data-value-target="#to-station">
         </ul>
       </div>
+      {% if config.flag_ticketclass_in_search %}
+      <div class="mb-3" id="to-station-div">
+        <label for="ticket-class" class="form-label">Class</label>
+        <select name="class" class="form-control" id="ticket-class">
+          <option value="" {{ "selected" if args.class == "" }}>All Classes</option>
+          <option value="SL" {{ "selected" if args.class == "SL" }}>Sleeper</option>
+          <option value="3A" {{ "selected" if args.class == "3A" }}>Third AC</option>
+          <option value="2A" {{ "selected" if args.class == "2A" }}>Second AC</option>
+          <option value="1A" {{ "selected" if args.class == "1A" }}>Firs AC</option>
+          <option value="FC" {{ "selected" if args.class == "FC" }}>First Class</option>
+          <option value="CC" {{ "selected" if args.class == "CC" }}>Chair Car</option>
+        </select>
+        </ul>
+      </div>
+      {% endif %}
       <button type="submit" class="btn btn-primary">Search Trains</button>
     </form>
 
+    {% if trains != None %}
     <div id="trains" class="mt-3">
+
+      {% for train in trains %}
+      <div class="card mb-2">
+        <div class="card-header">
+          <h5>{{ train.name }} ({{ train.number }})</h5>
+        </div>
+        <div class="card-body d-flex justify-content-between">
+          <div>
+            <h3>{{ train.departure[:5] }}</h3>
+            <h5>{{ train.from_station_name }}</h5>
+          </div>
+          <div>
+            <h3>{{ train.arrival[:5] }}</h3>
+            <h5>{{ train.to_station_name }}</h5>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
     </div>
+    {% endif %}
 
   {% else %}
   <div>

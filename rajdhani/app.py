@@ -12,7 +12,19 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template("index.html", config=config)
+    from_station_code = request.args.get("from_station_code")
+    to_station_code = request.args.get("to_station_code")
+    ticket_class = request.args.get("class")
+
+    if from_station_code and to_station_code:
+        print("search-trains")
+        trains = db.search_trains(
+            from_station_code=from_station_code,
+            to_station_code=to_station_code,
+            ticket_class=ticket_class)
+    else:
+        trains = None
+    return render_template("index.html", config=config, trains=trains, args=request.args)
 
 @app.route("/api/flags")
 def api_flags():

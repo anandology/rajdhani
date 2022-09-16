@@ -4,7 +4,7 @@
 
 flag_homepage = True
 flag_show_schedule_link = False
-flag_ticketclass_in_search = False
+flag_ticketclass_in_search = True
 flag_search_filters = False
 
 ## Database configurations
