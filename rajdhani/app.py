@@ -30,6 +30,11 @@ def index():
         trains = None
     return render_template("index.html", config=config, trains=trains, args=request.args)
 
+@app.route("/trains/<number>")
+def schedule(number):
+    schedule = db.get_schedule(number)
+    return render_template("schedule.html", schedule=schedule, train_number=number)
+
 @app.route("/api/flags")
 def api_flags():
     flags = {k: v for k, v in config.__dict__.items() if k.startswith("flag_")}

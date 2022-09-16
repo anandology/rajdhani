@@ -15,6 +15,7 @@ meta = MetaData(bind=engine)
 
 train_table = Table("train", meta, autoload=True)
 station_table = Table("station", meta, autoload=True)
+schedule_table = Table("schedule", meta, autoload=True)
 
 def search_stations(q):
     """Returns the top ten stations matching the given query string.
@@ -133,3 +134,8 @@ def search_trains(
             "duration": "05:55"
         },
     ]
+
+def get_schedule(train_number):
+    s = schedule_table
+    q = select(s).where(s.c.train_number==train_number)
+    return q.execute().all()
