@@ -3,7 +3,7 @@ Module to interact with the database.
 """
 from sqlalchemy import (
     create_engine, MetaData, Table,
-    select, func, or_, literal)
+    select, func, and_, or_, literal)
 from . import placeholders
 from . import config
 from . import db_ops
@@ -37,7 +37,35 @@ def search_stations(q):
     )
     return [dict(row) for row in query.execute()]
 
-def search_trains(from_station_code, to_station_code, ticket_class=None):
+def get_timeslot(value):
+    """Converts the timeslot value to begin time and end time.
+    """
+    slots = {
+        "1": ("00:00", "07:59"),
+        "2": ("08:00", "11:59"),
+        "3": ("12:00", "15:59"),
+        "4": ("16:00", "19:59"),
+        "5": ("20:00", "23:59"),
+    }
+    return slots[value]
+
+def apply_slot_filter(column, timeslot):
+    begin_time, end_time = get_timeslot(timeslot)
+    return and_(column >= begin_time, column <= end_time)
+
+def apply_slot_filters(q, column, timeslots):
+    if not timeslots:
+        return q
+
+    clause = or_(*[apply_slot_filter(column, timeslot) for timeslot in timeslots])
+    return q.where(clause)
+
+def search_trains(
+        from_station_code,
+        to_station_code,
+        ticket_class=None,
+        departure_time=[],
+        arrival_time=[]):
     """Returns all the trains that source to destination stations on
     the given date. When ticket_class is provided, this should return
     only the trains that have that ticket class.
@@ -68,6 +96,10 @@ def search_trains(from_station_code, to_station_code, ticket_class=None):
             "CC": t.c.chair_car,
         }
         q = q.where(columns[ticket_class]==1)
+
+    q = apply_slot_filters(q, t.c.departure, departure_time)
+    q = apply_slot_filters(q, t.c.arrival, arrival_time)
+
     return q.execute().all()
 
     # TODO: make a db query to get the matching trains

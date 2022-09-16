@@ -67,13 +67,13 @@
   {% if trains != None %}
     <div id="trains" class="mt-3">
       <div class="row">
-        <div class="col-md-9">
+        <div class="{{ 'col-md-9' if config.flag_search_filters else 'col-md-12' }}">
           {% for train in trains %}
             {{ TrainCard(train) }}
           {% endfor %}
         </div>
-        <div class="col-md-3 train-sidebar">
-          {% if config.flag_search_filters %}
+        {% if config.flag_search_filters %}
+          <div class="col-md-3 train-sidebar">
             <div class="mb-3">
               <h6>Departure Time</h6>
               {{ TimeSlot("dt", "1", "Early Morning", "Midnight - 8 am") }}
@@ -90,8 +90,8 @@
               {{ TimeSlot("at", "4", "Evening", "4 pm - 8 pm") }}
               {{ TimeSlot("at", "5", "Night", "8 pm - Midnight") }}
             </div>
-          {% endif %}
-        </div>
+          </div>
+        {% endif %}
       </div>
     </div>
   {% endif %}

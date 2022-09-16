@@ -13,11 +13,18 @@
     padding: 0;
 }
 
-.autocomplete-list .autocomplete-item { 
+.autocomplete-list .autocomplete-item {
     padding: 0.4rem;
 }
 
-.autocomplete-list .autocomplete-item:hover { 
+.autocomplete-list .autocomplete-item:hover {
     background-color: var(--bs-primary);
     color: var(--bs-light);
+}
+
+.time-slot {
+    float: right;
+}
+.train-sidebar label {
+    width: 90%;
 }
