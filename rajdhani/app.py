@@ -46,11 +46,16 @@ def api_search():
     from_station_code = request.args.get("from")
     to_station_code = request.args.get("to")
     ticket_class = request.args.get("class")
+    departure_time = request.args.getlist("dt")
+    arrival_time = request.args.getlist("at")
 
     trains = db.search_trains(
         from_station_code=from_station_code,
         to_station_code=to_station_code,
-        ticket_class=ticket_class)
+        ticket_class=ticket_class,
+        departure_time=departure_time,
+        arrival_time=arrival_time)
+
     trains = [dict(t) for t in trains]
     return jsonify(trains)
 
