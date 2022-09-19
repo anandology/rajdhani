@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    {% if user %}
+    <h2>Hello, {{ user }}!</h2>
+    {% else %}
+    <h2>Hello, please use <a class="text-decoration-none" href="/login">/login</a> to login.</h2>
+    {% endif %}
+    <em>This is a simple page to see what user you are authenticated as.</em>
+</div>
+{% endblock %}

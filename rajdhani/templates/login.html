@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header mb-5">
+    <h2 class="mb-0">Login</h2>
+    <em>Enter your email to start tracking your bookings.</em>
+</div>
+<form class="row" method="GET">
+    <div class="col">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" name="email" class="form-control" id="email" placeholder="name@example.com">
+        </div>
+
+        <button class="btn btn-primary" type="submit">Login</button>
+    </div>
+</form>
+{% endblock %}

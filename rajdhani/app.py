@@ -1,20 +1,29 @@
 import sqlite3
+from datetime import datetime
 
-from flask import Flask, jsonify, redirect, render_template, request
+from flask import Flask, abort, jsonify, redirect, render_template, request
 from urllib.parse import urlparse
 from . import config
 from . import db
 from . import db_ops
-
+from . import auth
+from . import notifications
 
 app = Flask(__name__)
 
+app.secret_key = config.secret_key
+
+
+@app.context_processor
+def add_context():
+    return dict(config=config)
 
 @app.route("/")
 def index():
     from_station_code = request.args.get("from_station_code")
     to_station_code = request.args.get("to_station_code")
     ticket_class = request.args.get("class")
+    departure_date = request.args.get("date")
     departure_time = request.args.getlist("dt")
     arrival_time = request.args.getlist("at")
 
@@ -24,11 +33,14 @@ def index():
             from_station_code=from_station_code,
             to_station_code=to_station_code,
             ticket_class=ticket_class,
+            departure_date=departure_date,
             departure_time=departure_time,
             arrival_time=arrival_time)
     else:
         trains = None
-    return render_template("index.html", config=config, trains=trains, args=request.args)
+
+    today = datetime.today().strftime("%Y-%m-%d")
+    return render_template("index.html", trains=trains, args=request.args, today=today)
 
 @app.route("/trains/<number>")
 def schedule(number):
@@ -45,11 +57,6 @@ def api_stations():
     q = request.args.get("q")
     stations = db.search_stations(q)
     return jsonify(stations)
-
-@app.route("/api/trains/<train_number>")
-def api_train(train_number):
-    schedule = [dict(row) for row in db.get_schedule(train_number)]
-    return jsonify(schedule)
 
 @app.route("/api/search")
 def api_search():
@@ -121,3 +128,64 @@ def progress():
     redirect_url = f"{config.base_status_page_url}/{username}"
 
     return redirect(redirect_url, code=302)
+
+@app.route("/book-ticket", methods=["GET", "POST"])
+def book_ticket_page():
+    if request.method == "POST":
+        db.book_ticket(train_number=request.form.get("train"),
+                       ticket_class=request.form.get("class"),
+                       departure_date=request.form.get("date"),
+                       passenger_name=request.form.get("passenger_name"),
+                       passenger_email=request.form.get("passenger_email"))
+
+        return redirect("/thank-you")
+    else:
+        email = auth.get_logged_in_user_email()
+
+        train_number = request.args.get("train")
+        ticket_class = request.args.get("class")
+        date = request.args.get("date")
+
+    booking = db.book_ticket(
+                train_number=request.args.get("train"),
+                ticket_class=request.args.get("class"),
+                date=request.args.get("date"),
+                passenger_name=request.args.get("passenger_name"),
+                passenger_email=email)
+    notifications.send_booking_confirmation_email(booking)
+    return render_template("book_ticket.html",
+                           train_number=train_number,
+                           ticket_class=ticket_class,
+                           date=date, email=email)
+
+@app.route("/thank-you")
+def thank_you():
+    return render_template("thank_you.html")
+
+@app.route("/bookings")
+def my_bookings():
+    email = auth.get_logged_in_user_email()
+    if not email:
+        return redirect("/login")
+
+    bookings = db.get_trips(email)
+    return render_template("bookings.html", bookings=bookings)
+
+@app.route("/hello")
+def hello():
+    """Simple endpoint to check the authenticated user is
+    """
+    return render_template("hello.html", user=auth.get_logged_in_user_email())
+
+@app.route("/login")
+def login():
+    if email := request.args.get("email"):
+        auth.login(email)
+        return redirect("/hello")
+
+    return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    auth.logout()
+    return redirect("/")

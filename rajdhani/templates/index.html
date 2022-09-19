@@ -15,11 +15,14 @@
     <ul id="to-station-autocomplete-items" class="form-control autocomplete-list" style="display: none;" data-text-target="#to-station-text" data-value-target="#to-station">
     </ul>
   </div>
+  <div class="mb-3">
+    <label for="departure-date" class="form-label">Date</label>
+    <input type="date" class="form-control" name="date" value="{{ args.date or today }}"></input>
+  </div>
   {% if config.flag_ticketclass_in_search %}
     <div class="mb-3" id="to-station-div">
       <label for="ticket-class" class="form-label">Class</label>
       <select name="class" class="form-control" id="ticket-class">
-        <option value="" {{ "selected" if args.class == "" }}>All Classes</option>
         <option value="SL" {{ "selected" if args.class == "SL" }}>Sleeper</option>
         <option value="3A" {{ "selected" if args.class == "3A" }}>Third AC</option>
         <option value="2A" {{ "selected" if args.class == "2A" }}>Second AC</option>
@@ -50,18 +53,25 @@
       {% endif %}
       <h5>{{ train.name }} ({{ train.number }}) </h5>
     </div>
-    <div class="card-body d-flex justify-content-between align-items-center">
-      <div class="text-start">
-        <h3>{{ train.departure[:5] }}</h3>
-        <h5>{{ train.from_station_name }}</h5>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="text-start">
+          <h3>{{ train.departure[:5] }}</h3>
+          <h5>{{ train.from_station_name }}</h5>
+        </div>
+        <div>
+            <h6>{{ train.duration_h | int }}h {{ train.duration_m | int}}m</h6>
+        </div>
+        <div class="text-end">
+          <h3>{{ train.arrival[:5] }}</h3>
+          <h5>{{ train.to_station_name }}</h5>
+        </div>
       </div>
+      {% if config.flag_bookings %}
       <div>
-          <h6>{{ train.duration_h | int }}h {{ train.duration_m | int}}m</h6>
+        <a class="btn btn-primary" href="/book-ticket?train={{ train.number }}&class={{ args.class }}&date={{ args.date }}">Book ticket</a>
       </div>
-      <div class="text-end">
-        <h3>{{ train.arrival[:5] }}</h3>
-        <h5>{{ train.to_station_name }}</h5>
-      </div>
+      {% endif %}
     </div>
   </div>
 {% endmacro %}
@@ -79,19 +89,19 @@
           <div class="col-md-3 train-sidebar">
             <div class="mb-3">
               <h6>Departure Time</h6>
-              {{ TimeSlot("dt", "1", "Early Morning", "Midnight - 8 am") }}
-              {{ TimeSlot("dt", "2", "Morning", "8 am - Noon") }}
-              {{ TimeSlot("dt", "3", "Afternoon", "Noon - 4 pm") }}
-              {{ TimeSlot("dt", "4", "Evening", "4 pm - 8 pm") }}
-              {{ TimeSlot("dt", "5", "Night", "8 pm - Midnight") }}
+              {{ TimeSlot("dt", "slot1", "Early Morning", "Midnight - 8 am") }}
+              {{ TimeSlot("dt", "slot2", "Morning", "8 am - Noon") }}
+              {{ TimeSlot("dt", "slot3", "Afternoon", "Noon - 4 pm") }}
+              {{ TimeSlot("dt", "slot4", "Evening", "4 pm - 8 pm") }}
+              {{ TimeSlot("dt", "slot5", "Night", "8 pm - Midnight") }}
             </div>
             <div class="mb-3">
               <h6>Arrival Time</h6>
-              {{ TimeSlot("at", "1", "Early Morning", "Midnight - 8 am") }}
-              {{ TimeSlot("at", "2", "Morning", "8 am - Noon") }}
-              {{ TimeSlot("at", "3", "Afternoon", "Noon - 4 pm") }}
-              {{ TimeSlot("at", "4", "Evening", "4 pm - 8 pm") }}
-              {{ TimeSlot("at", "5", "Night", "8 pm - Midnight") }}
+              {{ TimeSlot("at", "slot1", "Early Morning", "Midnight - 8 am") }}
+              {{ TimeSlot("at", "slot2", "Morning", "8 am - Noon") }}
+              {{ TimeSlot("at", "slot3", "Afternoon", "Noon - 4 pm") }}
+              {{ TimeSlot("at", "slot4", "Evening", "4 pm - 8 pm") }}
+              {{ TimeSlot("at", "slot5", "Night", "8 pm - Midnight") }}
             </div>
           </div>
         {% endif %}
