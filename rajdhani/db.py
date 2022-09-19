@@ -42,11 +42,11 @@ def get_timeslot(value):
     """Converts the timeslot value to begin time and end time.
     """
     slots = {
-        "1": ("00:00", "07:59"),
-        "2": ("08:00", "11:59"),
-        "3": ("12:00", "15:59"),
-        "4": ("16:00", "19:59"),
-        "5": ("20:00", "23:59"),
+        "slot1": ("00:00", "07:59"),
+        "slot2": ("08:00", "11:59"),
+        "slot3": ("12:00", "15:59"),
+        "slot4": ("16:00", "19:59"),
+        "slot5": ("20:00", "23:59"),
     }
     return slots[value]
 
@@ -65,6 +65,7 @@ def search_trains(
         from_station_code,
         to_station_code,
         ticket_class=None,
+        departure_date=None,
         departure_time=[],
         arrival_time=[]):
     """Returns all the trains that source to destination stations on
@@ -139,3 +140,14 @@ def get_schedule(train_number):
     s = schedule_table
     q = select(s).where(s.c.train_number==train_number)
     return q.execute().all()
+
+def book_ticket(train_number, ticket_class, departure_date, passenger_name, passenger_email):
+    """Book a ticket for passenger
+    """
+    # TODO: make a db query and insert a new booking
+    # into the booking table
+
+    return placeholders.TRIPS[0]
+
+def get_trips(email):
+    return []
